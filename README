@@ -1,0 +1,62 @@
+Jonathan Miller
+Novemeber 2016
+
+This program detects similarity in ngrams between a collection of text files. If two text files exceed a set threshold of similarity,
+then they are ‘flagged’ as possible examples of plagiarism.
+
+Obviously, one could simply compare every single word in a file and call it a day. As a spin-off on this idea, I decided to use
+n-grams of differing sizes to compare chunks/groups of words, which is a far better indication of plagiarism if there are matches.
+
+Source files:
+plagiarism.cpp - the main driver for the plagiarism detector
+
+metric.cpp - contains the functions necessary to read files and compare their ngrams.
+
+metric.hpp - header file for functions within metric.cpp
+
+—————————————————————————————————————————————————————————————————————————————————————
+RUNNING:
+To use this program, a list of suspicious files should be stores as a .txt file. The program will then compare each of the files
+in the list against each other and output results.
+
+To run, if the executable isn’t already created, type 'make' to create the executable.
+Then call the executable by typing:
+
+     ../bin/plagiarism [input text] [sensitivity]
+
+Usage is also printed by the program itself if the program is run without sufficient arguments.
+
+TESTING:
+A unit-test framework was implemented here. Simply run the executable located in the bin folder:
+
+   ../bin/unitTest
+
+This unitTest executable tested all the functions that took in parameters and modified them such as functions that returned the size of an object or functions that modified the contents of a map with a given file or NgramCollection object.
+
+Apart from the unit-test framework, a folder of test cases is included within src. To run them simply call from the ‘tests’ folder when running the ‘plagiarism’ executable like so:
+
+      ../bin/plagiarism tests/ inputList[1, 2, 3, or 4].txt [sensitivity]
+
+There are four input cases to test with: inputList1.txt, inputList2.txt, inputList3.txt, and inputList4.txt.
+
+inputList1.txt - file 1 and file 2 - expected 100% plagiarism. file 3 slightly different
+inputList2.txt - empty file vs regular file - 0% plagiarism.
+inputList3.txt - plagiarized file differing by all caps and no caps - expected 100% plagiarism.
+inputList4.txt - there are three words in both files. the middle word for both differ by different punctuation. similarity less than 100% expected because middle words should read as two different words
+
+PLAN OF ATTACK:
+The overall plan of attack (roughly) was to store the words of each text file and then compare them to see which percentage of them matched. This idea evolved to involve ngrams which had been introduced in some coursework. I then decided to mark the sensitivities for the program by ngram size. From there, it was pretty simple to decide what kind of functions were required to create this program: functions to read files, store words, compare words, etc. Finally, to determine if a flag should be thrown for plagiarism, I decided to set an arbitrary threshold value based on numerous runs from the given datasets. Plagiarized files from the given datasets had at least 20% similarity in ngrams so that was how I decided on a threshold of 20%. I used this number for the threshold on the low sensitivity, and then for the medium and high sensitivities I lowered the threshold arbitrarily to 18% and 15% respectively.
+
+DESIGN:
+A significant design choice that I made was the use of two separate classes to implement the plagiarism program. I created a Metric class to perform all the functions of reading files and comparing them, but I also created a NgramCollection class which would define the objects that I would be storing in the Metric class for comparison. The functions and private member variables for these classes were defined in the header file, metric.hpp. In the driver file, I also decided to create a simple helper function to read in the user argument for sensitivity so that the program could easily determine the ngram size to use for its sensitivity flags. Within the program itself, I decided to store all the ngram objects into a map so that lookup times would be O(log n).  Finally, I decided to put the entire functionality of the program into one function (Metric::readFileList) and the rest of the functions were used as helper functions within the single main function. I did this so that the driver could be as simple as possible.
+
+FLAGS:
+Low flag: The program compares files based on an ngram size of 5 words. Threshold flag value is at 20% similarity.
+Medium flag: The program compares files based on an ngram size of 3 words. Threshold flag value is at 18% similarity.
+High flag: The program compares files based on an ngram size of 2 words (bigrams). Threshold flag value is at 15% similarity.
+
+Evidently, the larger the ngram size, the less likely it is that there will be an exact match without blatant plagiarism. Thus, I thought it would be an appropriate measure to determine the sensitivity of the program. Threshold values were also lowered as sensitivity increased so that the high sensitivity would catch more flags than the low sensitivity for a given pair of files.
+
+
+FUTURE:
+I would like to modify this project and implement a hash table to store the n-grams since hash table lookups are in O(1) complexity, which would increase efficiency.

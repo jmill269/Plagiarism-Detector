@@ -1,0 +1,8 @@
+.DS_Store
+*.o
+*~
+*#
+../bin/plagiarism
+../bin
+/bin/
+bin

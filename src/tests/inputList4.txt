@@ -1,0 +1,2 @@
+tests/test1-list4.txt
+tests/test2-list4.txt
